@@ -11,11 +11,14 @@ spring:
     # 注意：请把你本地数据库的密码修改到 password 这一行
     url: jdbc:mysql://localhost:3306/elderhub?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
-    password: root
+    password: 123456
 
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*Mapper.xml
+  type-aliases-package: com.it.elderhub.entity    # ← 改成这个
   global-config:
     db-config:
       id-type: auto
-      table-prefix: t_
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
