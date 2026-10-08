@@ -19,3 +19,7 @@ mybatis-plus:
     db-config:
       id-type: auto
       table-prefix: t_
+
+jwt:
+  secret: change-this-to-a-long-random-secret-key-at-least-32-bytes
+  expiration-ms: 3600000

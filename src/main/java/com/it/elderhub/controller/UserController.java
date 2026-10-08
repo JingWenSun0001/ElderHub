@@ -1,0 +1,27 @@
+package com.it.elderhub.controller;
+
+import com.it.elderhub.entity.User;
+import com.it.elderhub.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/user")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/login")
+    public String login(@RequestBody User user){
+        User loginUser = userService.login(user.getUsername(), user.getPassword());
+        if(loginUser!=null){
+            return "登录成功";
+        }else {
+            return "登录失败";
+        }
+    }
+}
