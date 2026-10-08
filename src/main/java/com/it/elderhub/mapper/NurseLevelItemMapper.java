@@ -1,18 +1,13 @@
 package com.it.elderhub.mapper;
 
-import com.it.elderhub.entity.NurseLevelItem;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.it.elderhub.entity.NurseLevelItem;
 
 /**
-* @author Ljz
-* @description 针对表【nurse_level_item(护理等级项目关联表)】的数据库操作Mapper
-* @createDate 2026-10-08 09:52:06
-* @Entity com.it.elderhub.entity.NurseLevelItem
-*/
+ * 护理级别项目关联Mapper
+ * @author ElderHub
+ * @description 针对表【nurselevelitem(护理级别与护理项目关联表)】的数据库操作Mapper
+ * @Entity com.it.elderhub.entity.NurseLevelItem
+ */
 public interface NurseLevelItemMapper extends BaseMapper<NurseLevelItem> {
-
 }
-
-
-
-
