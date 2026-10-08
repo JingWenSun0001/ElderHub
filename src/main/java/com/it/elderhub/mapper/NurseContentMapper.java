@@ -1,18 +1,13 @@
 package com.it.elderhub.mapper;
 
-import com.it.elderhub.entity.NurseContent;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.it.elderhub.entity.NurseContent;
 
 /**
-* @author Ljz
-* @description 针对表【nurse_content(护理项目内容表)】的数据库操作Mapper
-* @createDate 2026-10-08 09:52:06
-* @Entity com.it.elderhub.entity.NurseContent
-*/
+ * 护理项目Mapper
+ * @author ElderHub
+ * @description 针对表【nursecontent(护理项目表)】的数据库操作Mapper
+ * @Entity com.it.elderhub.entity.NurseContent
+ */
 public interface NurseContentMapper extends BaseMapper<NurseContent> {
-
 }
-
-
-
-
