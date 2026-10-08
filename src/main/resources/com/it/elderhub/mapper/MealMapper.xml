@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.mapper.MealMapper">
+
+    <resultMap id="BaseResultMap" type="com.it.elderhub.entity.Meal">
+            <id property="id" column="id" />
+            <result property="week_day" column="week_day" />
+            <result property="meal_type" column="meal_type" />
+            <result property="food_id" column="food_id" />
+            <result property="taste" column="taste" />
+            <result property="is_deleted" column="is_deleted" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,week_day,meal_type,food_id,taste,is_deleted
+    </sql>
+</mapper>

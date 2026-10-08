@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.mapper.CustomerPreferenceMapper">
+
+    <resultMap id="BaseResultMap" type="com.it.elderhub.entity.CustomerPreference">
+            <id property="id" column="id" />
+            <result property="customer_id" column="customer_id" />
+            <result property="preferences" column="preferences" />
+            <result property="attention" column="attention" />
+            <result property="remark" column="remark" />
+            <result property="is_deleted" column="is_deleted" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,customer_id,preferences,attention,remark,is_deleted
+    </sql>
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.mapper.NurseRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.it.elderhub.entity.NurseRecord">
+            <id property="id" column="id" />
+            <result property="customer_id" column="customer_id" />
+            <result property="item_id" column="item_id" />
+            <result property="user_id" column="user_id" />
+            <result property="nursing_time" column="nursing_time" />
+            <result property="nursing_content" column="nursing_content" />
+            <result property="nursing_count" column="nursing_count" />
+            <result property="is_deleted" column="is_deleted" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,customer_id,item_id,user_id,nursing_time,nursing_content,
+        nursing_count,is_deleted
+    </sql>
+</mapper>
