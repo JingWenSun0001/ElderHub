@@ -7,26 +7,27 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- * 护理等级项目关联表
- * @TableName nurse_level_item
+ * 护理级别与护理项目关联表
+ * @TableName nurselevelitem
  */
-@TableName(value ="nurse_level_item")
 @Data
+@TableName(value = "nurselevelitem")
 public class NurseLevelItem {
+
     /**
-     * 关联ID
+     * 主键ID
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 护理等级ID
+     * 护理级别ID（关联nurselevel表）
      */
     @TableField(value = "level_id")
     private Integer level_id;
 
     /**
-     * 护理项目ID
+     * 护理项目ID（关联nursecontent表）
      */
     @TableField(value = "item_id")
     private Integer item_id;

@@ -6,27 +6,30 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
- * 护理等级表
- * @TableName nurse_level
+ * 护理级别表
+ * @TableName nurselevel
  */
-@TableName(value ="nurse_level")
 @Data
+@TableName(value = "nurselevel")
 public class NurseLevel {
+
     /**
-     * 护理等级ID
+     * 主键ID
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 等级名称
+     * 护理级别名称（如：一级护理、二级护理）
      */
     @TableField(value = "level_name")
     private String level_name;
 
     /**
-     * 状态（1:启用 2:停用）
+     * 级别状态（1:启用 2:停用）
      */
     @TableField(value = "level_status")
     private Integer level_status;
@@ -36,4 +39,16 @@ public class NurseLevel {
      */
     @TableField(value = "is_deleted")
     private Integer is_deleted;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "create_time")
+    private Date create_time;
+
+    /**
+     * 更新时间
+     */
+    @TableField(value = "update_time")
+    private Date update_time;
 }
