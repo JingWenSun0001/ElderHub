@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.dao.NurseLevelItemDao">
+
+    <resultMap type="com.it.elderhub.entity.NurseLevelItem" id="NurseLevelItemMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="levelId" column="level_id" jdbcType="INTEGER"/>
+        <result property="itemId" column="item_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.nurse_level_item(level_id, item_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.levelId}, #{entity.itemId})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.nurse_level_item(level_id, item_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.levelId}, #{entity.itemId})
+        </foreach>
+        on duplicate key update
+level_id = values(level_id) , item_id = values(item_id)     </insert>
+
+</mapper>
+

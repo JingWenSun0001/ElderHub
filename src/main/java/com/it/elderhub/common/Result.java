@@ -1,4 +1,4 @@
-package com.it.common;
+package com.it.elderhub.common;
 
 import lombok.Data;
 

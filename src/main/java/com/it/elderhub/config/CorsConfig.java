@@ -1,4 +1,4 @@
-package com.it.config;
+package com.it.elderhub.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

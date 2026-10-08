@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.dao.UserDao">
+
+    <resultMap type="com.it.elderhub.entity.User" id="UserMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="INTEGER"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="phoneNumber" column="phone_number" jdbcType="VARCHAR"/>
+        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="INTEGER"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.user(nickname, username, password, sex, email, phone_number, role_id, create_time, create_by, update_time, update_by, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.sex}, #{entity.email}, #{entity.phoneNumber}, #{entity.roleId}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime}, #{entity.updateBy}, #{entity.isDeleted})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.user(nickname, username, password, sex, email, phone_number, role_id, create_time, create_by, update_time, update_by, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.sex}, #{entity.email}, #{entity.phoneNumber}, #{entity.roleId}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime}, #{entity.updateBy}, #{entity.isDeleted})
+        </foreach>
+        on duplicate key update
+nickname = values(nickname) , username = values(username) , password = values(password) , sex = values(sex) , email = values(email) , phone_number = values(phone_number) , role_id = values(role_id) , create_time = values(create_time) , create_by = values(create_by) , update_time = values(update_time) , update_by = values(update_by) , is_deleted = values(is_deleted)     </insert>
+
+</mapper>
+

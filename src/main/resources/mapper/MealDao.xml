@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.dao.MealDao">
+
+    <resultMap type="com.it.elderhub.entity.Meal" id="MealMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="weekDay" column="week_day" jdbcType="VARCHAR"/>
+        <result property="mealType" column="meal_type" jdbcType="INTEGER"/>
+        <result property="foodId" column="food_id" jdbcType="INTEGER"/>
+        <result property="taste" column="taste" jdbcType="VARCHAR"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.meal(week_day, meal_type, food_id, taste, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.weekDay}, #{entity.mealType}, #{entity.foodId}, #{entity.taste}, #{entity.isDeleted})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.meal(week_day, meal_type, food_id, taste, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.weekDay}, #{entity.mealType}, #{entity.foodId}, #{entity.taste}, #{entity.isDeleted})
+        </foreach>
+        on duplicate key update
+week_day = values(week_day) , meal_type = values(meal_type) , food_id = values(food_id) , taste = values(taste) , is_deleted = values(is_deleted)     </insert>
+
+</mapper>
+

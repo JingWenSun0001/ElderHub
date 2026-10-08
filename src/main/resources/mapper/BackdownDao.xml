@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.dao.BackdownDao">
+
+    <resultMap type="com.it.elderhub.entity.Backdown" id="BackdownMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="customerId" column="customer_id" jdbcType="INTEGER"/>
+        <result property="retreattime" column="retreattime" jdbcType="TIMESTAMP"/>
+        <result property="retreattype" column="retreattype" jdbcType="INTEGER"/>
+        <result property="retreatreason" column="retreatreason" jdbcType="VARCHAR"/>
+        <result property="auditstatus" column="auditstatus" jdbcType="INTEGER"/>
+        <result property="auditperson" column="auditperson" jdbcType="VARCHAR"/>
+        <result property="audittime" column="audittime" jdbcType="TIMESTAMP"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.backdown(customer_id, retreattime, retreattype, retreatreason, auditstatus, auditperson, audittime, remarks, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.customerId}, #{entity.retreattime}, #{entity.retreattype}, #{entity.retreatreason}, #{entity.auditstatus}, #{entity.auditperson}, #{entity.audittime}, #{entity.remarks}, #{entity.isDeleted})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.backdown(customer_id, retreattime, retreattype, retreatreason, auditstatus, auditperson, audittime, remarks, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.customerId}, #{entity.retreattime}, #{entity.retreattype}, #{entity.retreatreason}, #{entity.auditstatus}, #{entity.auditperson}, #{entity.audittime}, #{entity.remarks}, #{entity.isDeleted})
+        </foreach>
+        on duplicate key update
+customer_id = values(customer_id) , retreattime = values(retreattime) , retreattype = values(retreattype) , retreatreason = values(retreatreason) , auditstatus = values(auditstatus) , auditperson = values(auditperson) , audittime = values(audittime) , remarks = values(remarks) , is_deleted = values(is_deleted)     </insert>
+
+</mapper>
+

@@ -1,4 +1,4 @@
-package com.it.common;
+package com.it.elderhub.common;
 
 public interface Constants {
     String CODE_200 = "200"; // 成功

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.dao.BedDao">
+
+    <resultMap type="com.it.elderhub.entity.Bed" id="BedMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="bedNo" column="bed_no" jdbcType="VARCHAR"/>
+        <result property="roomNo" column="room_no" jdbcType="INTEGER"/>
+        <result property="bedStatus" column="bed_status" jdbcType="INTEGER"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.bed(bed_no, room_no, bed_status, remarks)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.bedNo}, #{entity.roomNo}, #{entity.bedStatus}, #{entity.remarks})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.bed(bed_no, room_no, bed_status, remarks)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.bedNo}, #{entity.roomNo}, #{entity.bedStatus}, #{entity.remarks})
+        </foreach>
+        on duplicate key update
+bed_no = values(bed_no) , room_no = values(room_no) , bed_status = values(bed_status) , remarks = values(remarks)     </insert>
+
+</mapper>
+

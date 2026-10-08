@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.dao.CustomerNurseItemDao">
+
+    <resultMap type="com.it.elderhub.entity.CustomerNurseItem" id="CustomerNurseItemMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="customerId" column="customer_id" jdbcType="INTEGER"/>
+        <result property="itemId" column="item_id" jdbcType="INTEGER"/>
+        <result property="levelId" column="level_id" jdbcType="INTEGER"/>
+        <result property="nurseNumber" column="nurse_number" jdbcType="INTEGER"/>
+        <result property="buyTime" column="buy_time" jdbcType="TIMESTAMP"/>
+        <result property="maturityTime" column="maturity_time" jdbcType="TIMESTAMP"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.customer_nurse_item(customer_id, item_id, level_id, nurse_number, buy_time, maturity_time, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.customerId}, #{entity.itemId}, #{entity.levelId}, #{entity.nurseNumber}, #{entity.buyTime}, #{entity.maturityTime}, #{entity.isDeleted})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.customer_nurse_item(customer_id, item_id, level_id, nurse_number, buy_time, maturity_time, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.customerId}, #{entity.itemId}, #{entity.levelId}, #{entity.nurseNumber}, #{entity.buyTime}, #{entity.maturityTime}, #{entity.isDeleted})
+        </foreach>
+        on duplicate key update
+customer_id = values(customer_id) , item_id = values(item_id) , level_id = values(level_id) , nurse_number = values(nurse_number) , buy_time = values(buy_time) , maturity_time = values(maturity_time) , is_deleted = values(is_deleted)     </insert>
+
+</mapper>
+

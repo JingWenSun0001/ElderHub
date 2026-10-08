@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.elderhub.dao.NurseContentDao">
+
+    <resultMap type="com.it.elderhub.entity.NurseContent" id="NurseContentMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="serialNumber" column="serial_number" jdbcType="VARCHAR"/>
+        <result property="nursingName" column="nursing_name" jdbcType="VARCHAR"/>
+        <result property="servicePrice" column="service_price" jdbcType="NUMERIC"/>
+        <result property="message" column="message" jdbcType="VARCHAR"/>
+        <result property="executionCycle" column="execution_cycle" jdbcType="VARCHAR"/>
+        <result property="executionTimes" column="execution_times" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.nurse_content(serial_number, nursing_name, service_price, message, execution_cycle, execution_times, status, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.serialNumber}, #{entity.nursingName}, #{entity.servicePrice}, #{entity.message}, #{entity.executionCycle}, #{entity.executionTimes}, #{entity.status}, #{entity.isDeleted})
+        </foreach>
+    </insert>
+    <!-- 批量插入或按主键更新 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into elderhub.nurse_content(serial_number, nursing_name, service_price, message, execution_cycle, execution_times, status, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.serialNumber}, #{entity.nursingName}, #{entity.servicePrice}, #{entity.message}, #{entity.executionCycle}, #{entity.executionTimes}, #{entity.status}, #{entity.isDeleted})
+        </foreach>
+        on duplicate key update
+serial_number = values(serial_number) , nursing_name = values(nursing_name) , service_price = values(service_price) , message = values(message) , execution_cycle = values(execution_cycle) , execution_times = values(execution_times) , status = values(status) , is_deleted = values(is_deleted)     </insert>
+
+</mapper>
+
