@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -36,19 +38,19 @@ public class Outward {
      * 外出时间
      */
     @TableField(value = "outgoingtime")
-    private Date outgoingtime;
+    private LocalDateTime outgoingtime;
 
     /**
      * 预计回院时间
      */
     @TableField(value = "expectedreturntime")
-    private Date expectedreturntime;
+    private LocalDateTime expectedreturntime;
 
     /**
      * 实际回院时间
      */
     @TableField(value = "actualreturntime")
-    private Date actualreturntime;
+    private LocalDateTime actualreturntime;
 
     /**
      * 陪同人姓名
@@ -84,7 +86,7 @@ public class Outward {
      * 审批时间
      */
     @TableField(value = "audittime")
-    private Date audittime;
+    private LocalDateTime audittime;
 
     /**
      * 备注
