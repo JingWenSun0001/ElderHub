@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
+import org.springframework.cglib.core.Local;
 
 /**
  * 退住登记表
@@ -60,7 +63,7 @@ public class Backdown {
      * 审批时间
      */
     @TableField(value = "audittime")
-    private Date audittime;
+    private LocalDate audittime;
 
     /**
      * 备注
