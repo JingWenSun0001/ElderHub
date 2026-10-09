@@ -2,6 +2,7 @@ package com.it.elderhub.mapper;
 
 import com.it.elderhub.entity.Room;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author Ljz
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2026-10-08 09:52:06
 * @Entity com.it.elderhub.entity.Room
 */
+@Mapper
 public interface RoomMapper extends BaseMapper<Room> {
 
 }

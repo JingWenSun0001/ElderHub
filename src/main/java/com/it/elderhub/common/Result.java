@@ -4,27 +4,36 @@ import lombok.Data;
 
 @Data
 public class Result<T> {
-    private int code; // 200: 成功, 500: 失败
-    private String msg;
+
+    private Integer code;
+    private String message;
     private T data;
 
-    public static <T> Result<T> success() {
-        return buildResult(200, "操作成功", null);
-    }
-
     public static <T> Result<T> success(T data) {
-        return buildResult(200, "操作成功", data);
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage("success");
+        result.setData(data);
+        return result;
     }
 
-    public static <T> Result<T> error(String msg) {
-        return buildResult(500, msg, null);
+    public static <T> Result<T> success() {
+        return success(null);
     }
 
-    private static <T> Result<T> buildResult(int code, String msg, T data) {
+    public static <T> Result<T> error(String message) {
+        Result<T> result = new Result<>();
+        result.setCode(500);
+        result.setMessage(message);
+        result.setData(null);
+        return result;
+    }
+
+    public static <T> Result<T> error(Integer code, String message) {
         Result<T> result = new Result<>();
         result.setCode(code);
-        result.setMsg(msg);
-        result.setData(data);
+        result.setMessage(message);
+        result.setData(null);
         return result;
     }
 }

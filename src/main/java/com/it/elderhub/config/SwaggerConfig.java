@@ -1,31 +1,19 @@
 package com.it.elderhub.config;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
 public class SwaggerConfig {
-    @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.it.controller"))
-                .paths(PathSelectors.any())
-                .build();
-    }
 
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("颐养中心 ElderHub API")
-                .description("颐养中心系统后端接口文档")
-                .version("1.0")
-                .build();
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("ElderHub 后端接口文档")
+                        .version("1.0")
+                        .description("基于 SpringDoc OpenAPI 3.x"));
     }
 }
