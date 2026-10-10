@@ -2,9 +2,7 @@ package com.it.elderhub.vo;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * 客户护理项目VO（含项目信息和状态）
