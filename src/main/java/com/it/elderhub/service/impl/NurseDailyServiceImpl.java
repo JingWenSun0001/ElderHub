@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,16 +59,13 @@ public class NurseDailyServiceImpl implements NurseDailyService {
 
         QueryWrapper<Customer> wrapper = new QueryWrapper<>();
 
-        // 只查询当前管家负责的客户
         wrapper.eq("user_id", userId);
         wrapper.eq("is_deleted", 0);
 
-        // 客户姓名模糊查询
-        if (customerName != null && !customerName.isEmpty()) {
-            wrapper.like("customer_name", customerName);
+        if (customerName != null && !customerName.trim().isEmpty()) {
+            wrapper.like("customer_name", customerName.trim());
         }
 
-        // 按创建时间倒序
         wrapper.orderByDesc("create_time");
 
         Page<Customer> page = new Page<>(pageNum, pageSize);
@@ -74,18 +73,17 @@ public class NurseDailyServiceImpl implements NurseDailyService {
     }
 
     /**
-     * 查询客户购买的护理项目
+     * 查询客户已购买的护理项目
      */
     @Override
     public List<CustomerNurseItemVO> listCustomerItems(
             Integer customerId,
             Integer userId) {
 
-        // 1. 校验客户归属
         checkCustomerOwnership(customerId, userId);
 
-        // 2. 查询客户购买的护理项目
-        QueryWrapper<CustomerNurseItem> wrapper = new QueryWrapper<>();
+        QueryWrapper<CustomerNurseItem> wrapper =
+                new QueryWrapper<>();
 
         wrapper.eq("customer_id", customerId);
         wrapper.eq("is_deleted", 0);
@@ -98,7 +96,6 @@ public class NurseDailyServiceImpl implements NurseDailyService {
             return new ArrayList<>();
         }
 
-        // 3. 批量查询护理项目信息
         List<Integer> itemIds = items.stream()
                 .map(CustomerNurseItem::getItem_id)
                 .distinct()
@@ -107,8 +104,11 @@ public class NurseDailyServiceImpl implements NurseDailyService {
         List<NurseContent> contents =
                 nurseContentMapper.selectBatchIds(itemIds);
 
-        // 4. 组装VO并计算状态
-        Date now = new Date();
+        if (contents == null) {
+            contents = new ArrayList<>();
+        }
+
+        LocalDate today = LocalDate.now();
         List<CustomerNurseItemVO> voList = new ArrayList<>();
 
         for (CustomerNurseItem item : items) {
@@ -116,19 +116,18 @@ public class NurseDailyServiceImpl implements NurseDailyService {
 
             BeanUtils.copyProperties(item, vo);
 
-            // 填充护理项目信息
+            vo.setId(item.getId());
+            vo.setNurseNumber(item.getNurse_number());
+
             for (NurseContent content : contents) {
-                if (content.getId().equals(item.getItem_id())) {
+                if (content.getId() != null
+                        && content.getId().equals(item.getItem_id())) {
                     vo.setNursingName(content.getNursing_name());
-                    vo.setSerialNumber(content.getSerial_number());
-                    vo.setServicePrice(content.getService_price());
                     break;
                 }
             }
 
-            // 计算项目状态
-            calculateItemStatus(vo, now);
-
+            calculateItemStatus(vo, today);
             voList.add(vo);
         }
 
@@ -140,7 +139,13 @@ public class NurseDailyServiceImpl implements NurseDailyService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveNurseRecord(NurseRecordAddDTO dto, Integer userId) {
+    public void saveNurseRecord(
+            NurseRecordAddDTO dto,
+            Integer userId) {
+
+        if (dto == null) {
+            throw new RuntimeException("护理记录参数不能为空");
+        }
 
         // 1. 校验客户归属
         checkCustomerOwnership(dto.getCustomerId(), userId);
@@ -152,21 +157,12 @@ public class NurseDailyServiceImpl implements NurseDailyService {
         }
 
         // 3. 查询客户购买的护理项目
-        LambdaQueryWrapper<CustomerNurseItem> itemWrapper =
-                new LambdaQueryWrapper<>();
+        QueryWrapper<CustomerNurseItem> itemWrapper =
+                new QueryWrapper<>();
 
-        itemWrapper.eq(
-                CustomerNurseItem::getCustomer_id,
-                dto.getCustomerId()
-        );
-        itemWrapper.eq(
-                CustomerNurseItem::getItem_id,
-                dto.getItemId()
-        );
-        itemWrapper.eq(
-                CustomerNurseItem::getIs_deleted,
-                0
-        );
+        itemWrapper.eq("customer_id", dto.getCustomerId());
+        itemWrapper.eq("item_id", dto.getItemId());
+        itemWrapper.eq("is_deleted", 0);
 
         CustomerNurseItem customerItem =
                 customerNurseItemMapper.selectOne(itemWrapper);
@@ -176,41 +172,40 @@ public class NurseDailyServiceImpl implements NurseDailyService {
         }
 
         // 4. 校验剩余次数
-        if (customerItem.getNurse_number() == null
-                || customerItem.getNurse_number()
-                < dto.getNursingCount()) {
+        Integer remainingCount = customerItem.getNurse_number();
+
+        if (remainingCount == null
+                || remainingCount < dto.getNursingCount()) {
             throw new RuntimeException(
                     "该项目剩余次数不足，剩余："
-                            + customerItem.getNurse_number()
+                            + (remainingCount == null ? 0 : remainingCount)
                             + "次"
             );
         }
 
-        // 5. 创建护理记录
-        Date now = new Date();
+        // 5. 使用 LocalDateTime，匹配护理记录实体的时间类型
+        LocalDateTime now = LocalDateTime.now();
 
+        LocalDateTime nursingTime = dto.getNursingTime() != null
+                ? dto.getNursingTime()
+                : now;
+
+        // 6. 创建护理记录
         NurseRecord record = new NurseRecord();
 
         record.setCustomer_id(dto.getCustomerId());
         record.setItem_id(dto.getItemId());
         record.setUser_id(userId);
-
-        record.setNursing_time(
-                dto.getNursingTime() != null
-                        ? dto.getNursingTime()
-                        : now
-        );
-
+        record.setNursing_time(nursingTime);
         record.setNursing_content(dto.getNursingContent());
         record.setNursing_count(dto.getNursingCount());
         record.setIs_deleted(0);
 
-        // 先插入护理记录
         nurseRecordMapper.insert(record);
 
-        // NurseRecord实体中没有create_time和update_time属性，
-        // 因此通过数据库字段名更新这两个字段。
-        // 此处假设插入时数据库允许这两个字段使用默认值或暂时为空。
+        // 7. 更新护理记录创建时间和更新时间
+        // NurseRecord 实体没有对应的 Java 字段，因此使用数据库列名。
+        // 这里假设数据库支持插入时省略这两列。
         UpdateWrapper<NurseRecord> recordWrapper =
                 new UpdateWrapper<>();
 
@@ -220,21 +215,31 @@ public class NurseDailyServiceImpl implements NurseDailyService {
 
         nurseRecordMapper.update(null, recordWrapper);
 
-        // 6. 扣减客户护理项目剩余次数
+        // 8. 扣减护理项目剩余次数
         UpdateWrapper<CustomerNurseItem> updateWrapper =
                 new UpdateWrapper<>();
 
         updateWrapper.eq("id", customerItem.getId());
+        updateWrapper.eq("is_deleted", 0);
+        updateWrapper.ge("nurse_number", dto.getNursingCount());
 
         updateWrapper.set(
                 "nurse_number",
-                customerItem.getNurse_number()
-                        - dto.getNursingCount()
+                remainingCount - dto.getNursingCount()
         );
 
         updateWrapper.set("update_time", new Date());
 
-        customerNurseItemMapper.update(null, updateWrapper);
+        int rows = customerNurseItemMapper.update(
+                null,
+                updateWrapper
+        );
+
+        if (rows == 0) {
+            throw new RuntimeException(
+                    "扣减护理次数失败，请刷新后重试"
+            );
+        }
     }
 
     /**
@@ -245,16 +250,14 @@ public class NurseDailyServiceImpl implements NurseDailyService {
             Integer customerId,
             Integer userId) {
 
-        // 1. 校验客户归属
         checkCustomerOwnership(customerId, userId);
 
-        // 2. 查询护理记录
-        LambdaQueryWrapper<NurseRecord> wrapper =
-                new LambdaQueryWrapper<>();
+        QueryWrapper<NurseRecord> wrapper =
+                new QueryWrapper<>();
 
-        wrapper.eq(NurseRecord::getCustomer_id, customerId);
-        wrapper.eq(NurseRecord::getIs_deleted, 0);
-        wrapper.orderByDesc(NurseRecord::getNursing_time);
+        wrapper.eq("customer_id", customerId);
+        wrapper.eq("is_deleted", 0);
+        wrapper.orderByDesc("nursing_time");
 
         List<NurseRecord> records =
                 nurseRecordMapper.selectList(wrapper);
@@ -263,7 +266,6 @@ public class NurseDailyServiceImpl implements NurseDailyService {
             return new ArrayList<>();
         }
 
-        // 3. 批量查询护理项目信息
         List<Integer> itemIds = records.stream()
                 .map(NurseRecord::getItem_id)
                 .distinct()
@@ -272,7 +274,10 @@ public class NurseDailyServiceImpl implements NurseDailyService {
         List<NurseContent> contents =
                 nurseContentMapper.selectBatchIds(itemIds);
 
-        // 4. 组装VO
+        if (contents == null) {
+            contents = new ArrayList<>();
+        }
+
         List<NurseRecordVO> voList = new ArrayList<>();
 
         for (NurseRecord record : records) {
@@ -280,9 +285,9 @@ public class NurseDailyServiceImpl implements NurseDailyService {
 
             BeanUtils.copyProperties(record, vo);
 
-            // 填充护理项目名称
             for (NurseContent content : contents) {
-                if (content.getId().equals(record.getItem_id())) {
+                if (content.getId() != null
+                        && content.getId().equals(record.getItem_id())) {
                     vo.setNursingName(content.getNursing_name());
                     break;
                 }
@@ -296,13 +301,11 @@ public class NurseDailyServiceImpl implements NurseDailyService {
 
     /**
      * 校验客户归属
-     * 管家只能操作自己服务的客户
      */
     private void checkCustomerOwnership(
             Integer customerId,
             Integer userId) {
 
-        // 1. 检查客户是否存在且未删除
         QueryWrapper<Customer> customerWrapper =
                 new QueryWrapper<>();
 
@@ -316,7 +319,6 @@ public class NurseDailyServiceImpl implements NurseDailyService {
             throw new RuntimeException("客户不存在");
         }
 
-        // 2. 检查客户是否属于当前管家
         QueryWrapper<Customer> ownershipWrapper =
                 new QueryWrapper<>();
 
@@ -324,10 +326,9 @@ public class NurseDailyServiceImpl implements NurseDailyService {
         ownershipWrapper.eq("is_deleted", 0);
         ownershipWrapper.eq("user_id", userId);
 
-        Customer ownedCustomer =
-                customerMapper.selectOne(ownershipWrapper);
+        Long count = customerMapper.selectCount(ownershipWrapper);
 
-        if (ownedCustomer == null) {
+        if (count == null || count == 0) {
             throw new RuntimeException(
                     "无权操作该客户，该客户不属于您服务"
             );
@@ -335,33 +336,30 @@ public class NurseDailyServiceImpl implements NurseDailyService {
     }
 
     /**
-     * 计算客户护理项目状态
-     * 1：正常  2：到期  3：次数不足
+     * 计算护理项目状态
+     * 1：正常，2：次数不足，3：已到期
      */
     private void calculateItemStatus(
             CustomerNurseItemVO vo,
-            Date now) {
+            LocalDate today) {
 
-        // 到期判断
-        if (vo.getMaturityTime() != null
-                && vo.getMaturityTime().before(now)) {
+        LocalDate maturityTime = vo.getMaturityTime();
 
-            vo.setStatus(2);
-            vo.setStatusDesc("已到期");
+        if (maturityTime != null
+                && maturityTime.isBefore(today)) {
+            vo.setStatus(3);
+            vo.setStatusMsg("已到期");
             return;
         }
 
-        // 剩余护理次数判断
         if (vo.getNurseNumber() == null
                 || vo.getNurseNumber() <= 0) {
-
-            vo.setStatus(3);
-            vo.setStatusDesc("次数不足");
+            vo.setStatus(2);
+            vo.setStatusMsg("次数不足");
             return;
         }
 
-        // 正常
         vo.setStatus(1);
-        vo.setStatusDesc("正常");
+        vo.setStatusMsg("正常");
     }
 }
