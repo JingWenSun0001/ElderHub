@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
 
@@ -48,13 +50,13 @@ public class CustomerNurseItem {
      * 购买日期
      */
     @TableField(value = "buy_time")
-    private Date buy_time;
+    private LocalDate buy_time;
 
     /**
      * 服务到期日期
      */
     @TableField(value = "maturity_time")
-    private Date maturity_time;
+    private LocalDate maturity_time;
 
     /**
      * 逻辑删除（0:正常 1:删除）
