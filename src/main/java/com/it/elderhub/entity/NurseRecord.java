@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -42,7 +45,7 @@ public class NurseRecord {
      * 护理执行时间
      */
     @TableField(value = "nursing_time")
-    private Date nursing_time;
+    private LocalDateTime nursing_time;
 
     /**
      * 本次护理内容

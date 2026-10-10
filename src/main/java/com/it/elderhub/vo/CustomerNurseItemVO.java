@@ -11,63 +11,23 @@ import java.util.Date;
 @Data
 public class CustomerNurseItemVO {
 
-    /**
-     * 记录ID
-     */
     private Integer id;
 
-    /**
-     * 客户ID
-     */
-    private Integer customerId;
-
-    /**
-     * 护理项目ID
-     */
-    private Integer itemId;
-
-    /**
-     * 护理级别ID
-     */
-    private Integer levelId;
-
-    /**
-     * 购买数量（剩余次数）
-     */
-    private Integer nurseNumber;
-
-    /**
-     * 购买时间
-     */
-    private Date buyTime;
-
-    /**
-     * 到期时间
-     */
-    private Date maturityTime;
-
-    /**
-     * 护理项目名称
-     */
+    // 护理项目名称 (关联查询 nurse_content 表获取)
     private String nursingName;
 
-    /**
-     * 项目编号
-     */
-    private String serialNumber;
+    // 剩余次数
+    private Integer nurseNumber;
 
-    /**
-     * 服务价格
-     */
-    private BigDecimal servicePrice;
+    // 购买日期
+    private LocalDate buyTime;
 
-    /**
-     * 项目状态（1:正常 2:到期 3:欠费）
-     */
+    // 到期日期
+    private LocalDate maturityTime;
+
+    // 状态：1-正常/未到期，2-欠费(次数<=0)，3-已到期
     private Integer status;
 
-    /**
-     * 状态描述
-     */
-    private String statusDesc;
+    // 状态描述文本
+    private String statusMsg;
 }
