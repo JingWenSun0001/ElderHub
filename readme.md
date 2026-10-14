@@ -191,18 +191,6 @@ ElderHub
 >
 > 所有表都包含创建时间、更新时间、创建人、更新人字段，用于数据追踪。
 
-The user wants the startup section matching their own demo and the existing readme style. Their readme at github.com/Ljz4777/ElderHub/edit/master/readme.md. Let me fetch that readme to match its style. The local readme.md on disk is my rewritten version which they edited (admin0001). But the GitHub master readme may differ. Let me fetch it.Fetch the raw readme from GitHub master branch to see existing style. Use raw.githubusercontent.com.
-
-Now I understand the existing readme style on GitHub master. The user wants a "如何启动" section matching their own demo's actual setup (Spring Boot 3 + JDK 17, `elderhub` db, frontend path `elderhub-frontend/elderhub-frontend`, seed script, ports 8080/5173) but written in the style of their existing readme — which uses "## 项目部署运行 / ### 环境准备 / **后端** **前端** / ### 运行步骤 / #### 后端启动 / #### 前端启动" numbered-step style.
-
-The existing readme's 部署运行 section has outdated info (JDK 1.8, elderhub_db, elderhub-admin-front, request.js edit, Knife4j). The user wants copy-paste content for "how to start" that matches their real demo. So I should write the section in the same style (#### 后端启动 / #### 前端启动 numbered lists) but with corrected facts. Should also include database startup explicitly — user asked 前端、后端、数据库怎么启动.
-
-Match the existing style: "## 项目部署运行", "### 环境准备" with **后端**/**前端** bullet groups, "### 运行步骤" with "#### 数据库初始化" / "#### 后端启动" / "#### 前端启动" numbered steps. Keep their numbered-list style rather than tables. Also add 演示账号 since readme style uses simple lists.
-
-Facts: JDK 17, MySQL 8.0, Maven Wrapper, Node 16+, db `elderhub` root/123456, sql/ scripts 00~18, frontend dir elderhub-frontend/elderhub-frontend, npm install, npm run seed, mvnw spring-boot:run, port 8080 context /ElderHub, npm run dev, 5173, proxy /api configured, accounts admin/123456, butler/123456 (readme on disk says admin0001 — user's manual edit; the GitHub master readme doesn't have accounts. The user said "根据我自己的demo以及readme已有的风格" — readme style refers to GitHub readme. I'll use butler since seed generates it... but earlier I noted their local edit uses admin0001. Hmm. To be safe, keep both? Last message I used butler and user didn't object. Keep butler, maybe add admin0001 not needed. Keep it simple: admin and butler.
-
-Output only the markdown block, no extra text? User said "其他任何多余的内容都不要出现" previously, repeated now. So output just the code block.
-
 ## 项目部署运行
 
 ### 环境准备
