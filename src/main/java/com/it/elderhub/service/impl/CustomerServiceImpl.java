@@ -73,10 +73,19 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer>
             customer.setCustomer_age(age);
         }
         //3.校验床位状态
-        Bed selectedBed = bedMapper.selectById(customer.getBed_id());
-        if(selectedBed == null||selectedBed.getBed_status()!=FREE){
-            throw new RuntimeException();
+        if (customer.getBed_id() == null) {
+            throw new RuntimeException("请选择床位");
         }
+        Bed selectedBed = bedMapper.selectById(customer.getBed_id());
+        if(selectedBed == null){
+            throw new RuntimeException("所选床位不存在");
+        }
+        if(selectedBed.getBed_status() != FREE){
+            throw new RuntimeException("所选床位不是空闲状态，请重新选择");
+        }
+        // 根据所选床位自动反填房间号和楼栋（606），避免前端漏传
+        customer.setRoom_no(String.valueOf(selectedBed.getRoom_no()));
+        customer.setBuilding_no("606");
         //4.插入customer
         this.save(customer);
         //5.更新床状态为OCCUPIED
