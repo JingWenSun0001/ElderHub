@@ -78,6 +78,7 @@ public class NurseRecordServiceImpl extends ServiceImpl<NurseRecordMapper, Nurse
      */
     private List<NurseRecordVO> getRecordsWithJoin(Integer customerId, Integer userId) {
         LambdaQueryWrapper<NurseRecord> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(NurseRecord::getIs_deleted, 0); // 排除已删除记录
         if (customerId != null) {
             wrapper.eq(NurseRecord::getCustomer_id, customerId);
         }

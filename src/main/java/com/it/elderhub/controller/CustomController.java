@@ -80,4 +80,14 @@ public class CustomController {
         return Result.success(list);
     }
 
+    /**
+     * 无床位客户列表
+     * GET /no-bed
+     */
+    @GetMapping("/no-bed")
+    public Result<List<Customer>> listNoBed() {
+        List<Customer> list = customerService.listNoBed();
+        return Result.success(list);
+    }
+
 }

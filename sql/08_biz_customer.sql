@@ -9,6 +9,7 @@ CREATE TABLE `customer` (
   `room_no` varchar(20) NOT NULL COMMENT '房间号',
   `building_no` varchar(11) NOT NULL COMMENT '所属楼栋',
   `bed_id` int NOT NULL COMMENT '床位ID',
+  `user_id` int NOT NULL DEFAULT '-1' COMMENT '健康管家用户ID（-1表示未分配）',
   `checkin_date` date NOT NULL COMMENT '入住日期',
   `expiration_date` date NOT NULL COMMENT '合同到期日期',
   `contact_tel` varchar(20) NOT NULL COMMENT '联系电话',

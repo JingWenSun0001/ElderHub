@@ -111,13 +111,19 @@ public class NurseDailyServiceImpl implements NurseDailyService {
                 nurseContentMapper.selectBatchIds(itemIds);
 
         // 4. 组装VO并计算状态
-        Date now = new Date();
+        LocalDate today = LocalDate.now();
         List<CustomerNurseItemVO> voList = new ArrayList<>();
 
         for (CustomerNurseItem item : items) {
             CustomerNurseItemVO vo = new CustomerNurseItemVO();
 
-            BeanUtils.copyProperties(item, vo);
+            // 实体为下划线字段，BeanUtils 无法拷贝，手动转换
+            vo.setId(item.getId());
+            vo.setItemId(item.getItem_id());
+            vo.setLevelId(item.getLevel_id());
+            vo.setNurseNumber(item.getNurse_number());
+            vo.setBuyTime(item.getBuy_time());
+            vo.setMaturityTime(item.getMaturity_time());
 
             // 填充护理项目信息
             for (NurseContent content : contents) {
@@ -130,7 +136,7 @@ public class NurseDailyServiceImpl implements NurseDailyService {
             }
 
             // 计算项目状态
-            calculateItemStatus(vo, now);
+            calculateItemStatus(vo, today);
 
             voList.add(vo);
         }
@@ -267,7 +273,14 @@ public class NurseDailyServiceImpl implements NurseDailyService {
         for (NurseRecord record : records) {
             NurseRecordVO vo = new NurseRecordVO();
 
-            BeanUtils.copyProperties(record, vo);
+            // 实体为下划线字段，BeanUtils 无法拷贝，手动转换
+            vo.setId(record.getId());
+            vo.setCustomerId(record.getCustomer_id());
+            vo.setItemId(record.getItem_id());
+            vo.setUserId(record.getUser_id());
+            vo.setNursingTime(record.getNursing_time());
+            vo.setNursingContent(record.getNursing_content());
+            vo.setNursingCount(record.getNursing_count());
 
             // 填充护理项目名称
             for (NurseContent content : contents) {
@@ -325,32 +338,35 @@ public class NurseDailyServiceImpl implements NurseDailyService {
 
     /**
      * 计算客户护理项目状态
-     * 1：正常  2：到期  3：次数不足
+     * 1：正常  2：欠费(次数<=0)  3：已到期（与管理端口径一致）
      */
     private void calculateItemStatus(
             CustomerNurseItemVO vo,
-            Date now) {
-
-        // 到期判断
-        if (vo.getMaturityTime() != null
-                && vo.getMaturityTime().isBefore(LocalDate.now())) {
-
-            vo.setStatus(2);
-            vo.setStatusDesc("已到期");
-            return;
-        }
+            LocalDate today) {
 
         // 剩余护理次数判断
         if (vo.getNurseNumber() == null
                 || vo.getNurseNumber() <= 0) {
 
+            vo.setStatus(2);
+            vo.setStatusMsg("欠费(次数<=0)");
+            vo.setStatusDesc("欠费(次数<=0)");
+            return;
+        }
+
+        // 到期判断
+        if (vo.getMaturityTime() != null
+                && vo.getMaturityTime().isBefore(today)) {
+
             vo.setStatus(3);
-            vo.setStatusDesc("次数不足");
+            vo.setStatusMsg("已到期");
+            vo.setStatusDesc("已到期");
             return;
         }
 
         // 正常
         vo.setStatus(1);
+        vo.setStatusMsg("正常");
         vo.setStatusDesc("正常");
     }
 }

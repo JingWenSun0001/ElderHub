@@ -18,10 +18,10 @@ public class CustomerNurseItemController {
     }
 
     /**
-     * 1.POST/level/set-设置护理级别
+     * 1.POST /level/set - 设置护理级别
      */
-    @PostMapping
-    public Result<Void> setLevel(@RequestBody Integer customerId,
+    @PostMapping("/level/set")
+    public Result<Void> setLevel(@RequestParam Integer customerId,
                                  @RequestParam Integer levelId){
         customerNurseItemService.setCustomerLevel(customerId, levelId);
         return Result.success(null);

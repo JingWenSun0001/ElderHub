@@ -80,6 +80,7 @@ public class CustomerNurseItemServiceImpl extends ServiceImpl<CustomerNurseItemM
             item.setNurse_number(1);   // 默认赠送1次
             item.setBuy_time(now);
             item.setMaturity_time(maturity);
+            item.setIs_deleted(0);
             return item;
         }).collect(Collectors.toList());
 
@@ -124,16 +125,21 @@ public class CustomerNurseItemServiceImpl extends ServiceImpl<CustomerNurseItemM
 
         List<NurseContent> contents = nurseContentMapper.selectBatchIds(itemIds);
 
-        // 建立 id -> NursingName 的映射 Map
-        Map<Integer, String> nameMap = contents.stream()
-                .collect(Collectors.toMap(NurseContent::getId, NurseContent::getNursing_name, (v1, v2) -> v1));
+        // 建立 id -> NurseContent 的映射 Map
+        Map<Integer, NurseContent> contentMap = contents.stream()
+                .collect(Collectors.toMap(NurseContent::getId, c -> c, (v1, v2) -> v1));
 
         // 3. 转换 VO 并计算状态
         LocalDate now = LocalDate.now();
         return items.stream().map(item -> {
             CustomerNurseItemVO vo = new CustomerNurseItemVO();
             vo.setId(item.getId());
-            vo.setNursingName(nameMap.getOrDefault(item.getItem_id(), "未知项目"));
+            vo.setItemId(item.getItem_id());
+            vo.setLevelId(item.getLevel_id());
+            NurseContent content = contentMap.get(item.getItem_id());
+            vo.setNursingName(content != null ? content.getNursing_name() : "未知项目");
+            vo.setSerialNumber(content != null ? content.getSerial_number() : null);
+            vo.setServicePrice(content != null && content.getService_price() != null ? content.getService_price().intValue() : null);
             vo.setNurseNumber(item.getNurse_number());
             vo.setBuyTime(item.getBuy_time());
             vo.setMaturityTime(item.getMaturity_time());
@@ -189,20 +195,44 @@ public class CustomerNurseItemServiceImpl extends ServiceImpl<CustomerNurseItemM
 
     /**
      * 单独购买项目
+     * 同一客户同一项目只保留一条记录：已存在则累加次数并延长到期日
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void buyItem(CustomerNurseItemAddDTO dto) {
+        if (dto.getCustomerId() == null || dto.getItemId() == null) {
+            throw new RuntimeException("客户和护理项目不能为空");
+        }
+
+        int addCount = dto.getAddCount() != null && dto.getAddCount() > 0 ? dto.getAddCount() : 1;
+        LocalDate maturity = dto.getMaturityTime() != null ? dto.getMaturityTime() : LocalDate.now();
+
+        LambdaQueryWrapper<CustomerNurseItem> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CustomerNurseItem::getCustomer_id, dto.getCustomerId())
+                .eq(CustomerNurseItem::getItem_id, dto.getItemId())
+                .eq(CustomerNurseItem::getIs_deleted, 0)
+                .last("LIMIT 1");
+        CustomerNurseItem exist = this.getOne(wrapper);
+
+        if (exist != null) {
+            // 已购过该项目：累加次数，到期日取较晚者
+            exist.setNurse_number(exist.getNurse_number() + addCount);
+            if (exist.getMaturity_time() == null || maturity.isAfter(exist.getMaturity_time())) {
+                exist.setMaturity_time(maturity);
+            }
+            this.updateById(exist);
+            return;
+        }
+
         CustomerNurseItem item = new CustomerNurseItem();
         item.setCustomer_id(dto.getCustomerId());
         item.setItem_id(dto.getItemId());
         item.setLevel_id(null); // 单独购买的不绑定等级ID
         // 购买数量默认1
-        item.setNurse_number(dto.getAddCount() != null ? dto.getAddCount() : 1);
+        item.setNurse_number(addCount);
         item.setBuy_time(LocalDate.now());
-
-        // 如果前端传了时间就用前端的，否则默认当前日期
-        item.setMaturity_time(dto.getMaturityTime() != null ? dto.getMaturityTime() : LocalDate.now());
+        item.setMaturity_time(maturity);
+        item.setIs_deleted(0);
 
         this.save(item);
     }

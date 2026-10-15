@@ -227,8 +227,24 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer>
         bedMapper.updateById(bed);
     }
 
+    /**
+     * 无管家客户列表（对应文档 GET /no-nurse）：user_id 为空或 -1
+     */
     @Override
     public List<Customer> listNoNurse() {
+        LambdaQueryWrapper<Customer> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Customer::getIs_deleted, 0) // 排除已退住/删除客户
+                .and(w -> w.isNull(Customer::getUser_id).or().eq(Customer::getUser_id, -1)) // 未分配管家
+                .orderByDesc(Customer::getId);
+
+        return this.list(queryWrapper);
+    }
+
+    /**
+     * 无床位客户列表：bed_id 为空
+     */
+    @Override
+    public List<Customer> listNoBed() {
         LambdaQueryWrapper<Customer> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.isNull(Customer::getBed_id) // 未分配床位
                 .eq(Customer::getIs_deleted, 0) // 排除已退住/删除客户
