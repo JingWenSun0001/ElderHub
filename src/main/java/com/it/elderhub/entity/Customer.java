@@ -67,6 +67,12 @@ public class Customer {
     private Integer bed_id;
 
     /**
+     * 健康管家用户ID（-1 或 NULL 表示未分配）
+     */
+    @TableField(value = "user_id")
+    private Integer user_id;
+
+    /**
      * 入住日期
      */
     @TableField(value = "checkin_date")

@@ -23,4 +23,6 @@ public interface CustomerService extends IService<Customer> {
     void comeback(Integer id);
 
     List<Customer> listNoNurse();
+
+    List<Customer> listNoBed();
 }

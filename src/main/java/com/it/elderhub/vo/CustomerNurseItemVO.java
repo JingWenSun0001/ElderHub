@@ -14,6 +14,12 @@ public class CustomerNurseItemVO {
 
     private Integer id;
 
+    // 护理项目ID
+    private Integer itemId;
+
+    // 护理等级ID（null 表示单独购买，非空表示级别绑定）
+    private Integer levelId;
+
     // 护理项目名称 (关联查询 nurse_content 表获取)
     private String nursingName;
 
